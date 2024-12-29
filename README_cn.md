@@ -69,40 +69,6 @@ fig.savefig('result.jpg',dpi = 550)
 break
 ```
 
-## Spike Encoding
-
-为了使得输入的 EEG 数据可以转换为适合 Spiking Neuron Networks 的脉冲序列的形式，我们需要设计额外的脉冲编码层，使得时序的 EEG 信号，转换为 Spike Pattern 的形式。
-
-针对 EEG 信号的输入的形式，我们可以将 Spike Encoding 分为 频谱分析形式 以及 端到端的处理模式。
-
-### 基于频谱分析的EEG信号分类
-频谱分析的范式是借助频谱分析的范式将 EEG 信号分解成不同频带的特征信息，并借助频谱分析的一般方法，将特定频带的 EEG 信号转换为转换为 频谱图的形式。
-
-![](EEGNetwork.png)
-
-常见的，我们可以将 $\alpha$ 波段的信息转换为 频谱分析的形式，并借助卷积网络的方式将其编码为脉冲序列的形式。具体而言，```Fully Connection``` 的结果将作为 ```Spike Pattern``` 的结果。
-
-频谱分析的方法可以通过如下的方式实现
-
-```
-## computer alpha bank (8-13hz)
-
-window_data = np.fft.fft(data[start:end, :], n=args.window_length, axis=0)
-window_data = np.abs(window_data) / args.window_length
-window_data = np.sum(np.power(window_data[args.point_low:args.point_high, :], 2), axis=0)
-```
-
-### 基于端到端的EEG信号分类
-
-对于端到端的EEG信号而言，考虑到 EEG 信号的时序性以及长序列特性，直接对原始信号进行直接编码需要更高的计算量。因而，我们可以借助 TAE 的三元脉冲编码的方式，将原本的长序列 EEG 信号转换为具有更高传输效率以及处理速度。我们可以借助 TAE.py 中的方法进行编码操作：
-
-![](TAE.png)
-```
-from TAE import TAE
-
-# tae: spike encoding， spare：spike fire ratio
-tae, spare = TAE(train_set[0], alpha=1.5, thr=0.01)
-```
 
 ## 搭建基于 Spike 神经元 的网络分类端
 
