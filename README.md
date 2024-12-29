@@ -72,43 +72,6 @@ fig.savefig('result.jpg',dpi = 550)
 break
 ```
 
-## Spike Encoding
-To convert the input EEG data into pulse sequences suitable for Spiking Neuron Networks, we need to design an additional pulse encoding layer. This layer will transform the temporal EEG signals into Spike Patterns.
-
-For the input form of EEG signals, Spike Encoding can be divided into spectral analysis form and end-to-end processing mode.
-
-### Classification of EEG Signals Based on Spectral Analysis
-
-The spectral analysis paradigm involves decomposing the EEG signals into characteristic information across different frequency bands. Using standard spectral analysis methods, the EEG signals within specific frequency bands are then converted into spectrograms.
-
-![](EEGNetwork.png)
-
-
-Commonly, we can convert the information in the $\alpha$ band into a spectral analysis form and encode it into a pulse sequence using convolutional networks. Specifically, the result of the Fully Connection layer will serve as the Spike Pattern output.
-
-Implementing Spectral Analysis for EEG Signals
-
-```
-## computer alpha bank (8-13hz)
-
-window_data = np.fft.fft(data[start:end, :], n=args.window_length, axis=0)
-window_data = np.abs(window_data) / args.window_length
-window_data = np.sum(np.power(window_data[args.point_low:args.point_high, :], 2), axis=0)
-```
-
-### End-to-End Classification of EEG Signals
-
-
-
-Considering the temporal nature and long sequence characteristics of EEG signals, directly encoding raw signals requires significant computational power. Therefore, we can use TAE (Ternary Asynchronous Event) encoding to convert long-sequence EEG signals into a form that allows for higher transmission efficiency and processing speed. This can be done using methods provided in TAE.py
-
-![](TAE.png)
-```
-from TAE import TAE
-
-# tae: spike encoding， spare：spike fire ratio
-tae, spare = TAE(train_set[0], alpha=1.5, thr=0.01)
-```
 
 ## Building an EEG Signal Classification Endpoint Using Spiking Neural Networks
 
